@@ -1,0 +1,195 @@
+---
+title: "Workshop1"
+author: "maz"
+format: html
+editor: visual
+---
+
+## Workshop 1
+
+```{r}
+install.packages("ggplot2")
+library(ggplot2)
+```
+
+```{r}
+data(airquality)
+```
+
+```{r}
+View(airquality)  # Opens the dataset in a spreadsheet-like viewer
+head(airquality)  # Displays the first few rows of the dataset
+
+```
+
+```{r}
+summary(airquality)  # Gives a statistical summary of the dataset
+str(airquality)      # Shows the structure of the dataset
+
+```
+
+1
+
+```{r}
+mean(airquality$Ozone, na.rm = TRUE)
+mean(airquality$Solar.R, na.rm = TRUE)
+```
+
+**Explanation**: This command calculates the mean (average) values for the 'Ozone' and 'Solar.R' columns, excluding any missing values (**`NA`**) in the dataset.
+
+2
+
+```{r}
+mean_Ozone <- mean(airquality$Ozone, na.rm = TRUE)
+
+mean_SolarR <- mean(airquality$Solar.R, na.rm = TRUE)
+
+print(paste("Mean Ozone Level:", mean_Ozone))
+print(paste("Mean Solar Radiation:", mean_SolarR))
+```
+
+-   **R Command**: Same as above, with **`na.rm = TRUE`**.
+
+-   **Explanation**: The **`na.rm = TRUE`** argument tells R to ignore the **`NA`** (Not Available) values while calculating the mean.
+
+3
+
+```{r}
+var(airquality$Ozone, na.rm = TRUE)
+sd(airquality$Ozone, na.rm = TRUE)
+
+```
+
+**Explanation**: These commands calculate the variance and standard deviation for the 'Ozone' variable, providing insights into its dispersion or spread.
+
+4
+
+```{r}
+median(airquality$Ozone, na.rm = TRUE)
+
+```
+
+**Explanation**: This computes the median (middle value) for the 'Ozone' variable, giving a sense of the central tendency.
+
+5
+
+```{r}
+summary(airquality$Ozone)
+
+```
+
+**Explanation**: The **`summary`** function in R provides the five number summary (minimum, first quartile, median, third quartile, maximum) for the 'Ozone' variable.
+
+6
+
+```{r}
+hist(airquality$Ozone, main="Ozone Histogram", xlab="Ozone")
+boxplot(airquality$Ozone, main="Ozone Box Plot")
+
+```
+
+**Explanation**: This command converts the 'Month' variable into a factor, which is R's way of handling categorical data.
+
+7
+
+```{r}
+hist(airquality$Ozone, main="Ozone Histogram", xlab="Ozone")
+boxplot(airquality$Ozone, main="Ozone Box Plot")
+```
+
+**Explanation**: These commands create a histogram and a box plot for the 'Ozone' variable, helping visualize the distribution and spread of the data.
+
+## Extra
+
+```{r}
+# Install necessary libraries
+install.packages("shiny")
+install.packages("plotly")  # For interactive plots
+install.packages("dplyr")   # For data manipulation
+install.packages("DT")      # For interactive tables
+
+# Load the libraries
+library(shiny)
+library(plotly)
+library(dplyr)
+library(DT)
+
+
+```
+
+```{r}
+data(airquality)
+```
+
+#### UI (User Interface)
+
+The UI defines the layout and appearance of your app:
+
+```{r}
+ui <- fluidPage(
+    titlePanel("Air Quality Data Visualization"),
+    
+    sidebarLayout(
+        sidebarPanel(
+            selectInput("xvar", "Select X Variable:", choices = names(airquality)),
+            selectInput("yvar", "Select Y Variable:", choices = names(airquality)),
+            selectInput("numvar", "Select Numeric Variable for Histogram/Density Plot:", 
+                        choices = c("Ozone", "Solar.R", "Wind", "Temp")),
+            selectInput("chartType", "Select Chart Type:",
+                        choices = c("Bar Chart", "Histogram", "Box Plot", "Scatter Plot", 
+                                    "Line Chart", "Time Series", "Area Chart", "Density Plot"))
+        ),
+        
+        mainPanel(
+            plotOutput("plot")
+        )
+    )
+)
+
+
+
+```
+
+#### Server Function
+
+The server function contains the app's logic:
+
+```{r}
+server <- function(input, output) {
+    
+    output$plot <- renderPlot({
+        data <- airquality
+
+        # Base plot, using a conditional for histogram and density plot
+        plot <- if (input$chartType %in% c("Histogram", "Density Plot")) {
+            ggplot(data, aes_string(x = input$numvar))
+        } else {
+            ggplot(data, aes_string(x = input$xvar, y = input$yvar))
+        }
+
+        # Add appropriate geom based on selected chart type
+        switch(input$chartType,
+               "Bar Chart" = plot + geom_bar(stat = "identity"),
+               "Histogram" = plot + geom_histogram(binwidth = 1, na.rm = TRUE),
+               "Box Plot" = plot + geom_boxplot(),
+               "Scatter Plot" = plot + geom_point(),
+               "Line Chart" = plot + geom_line(),
+               "Time Series" = plot + geom_line(),
+               "Area Chart" = plot + geom_area(),
+               "Density Plot" = plot + geom_density()
+        )
+    })
+}
+
+
+
+```
+
+#### Run the App
+
+To start the app, use:
+
+```{r}
+shinyApp(ui = ui, server = server)
+
+```

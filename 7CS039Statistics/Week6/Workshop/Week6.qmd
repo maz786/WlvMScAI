@@ -1,0 +1,238 @@
+---
+title: "Untitled"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
+
+```{r}
+library(OneR)
+
+```
+
+```{r}
+# URL of the Mushroom dataset
+url <- "https://archive.ics.uci.edu/ml/machine-learning-databases/mushroom/agaricus-lepiota.data"
+
+# Download the file (optional if you've already downloaded it manually)
+download.file(url, destfile = "mushroom.csv")
+
+# Read the dataset into R
+# Assuming the dataset doesn't have a header row and columns need to be named manually
+mushroom_data <- read.csv("mushroom.csv", header = FALSE)
+
+# Optionally, add column names if the dataset doesn't have any
+colnames(mushroom_data) <- c("column1", "column2", "column3", ...) # replace with actual column names
+
+```
+
+```{r}
+# URL of the Mushroom dataset
+url <- "https://archive.ics.uci.edu/ml/machine-learning-databases/mushroom/agaricus-lepiota.data"
+
+# Download the file (optional if you've already downloaded it manually)
+download.file(url, destfile = "mushroom.csv")
+
+# Read the dataset into R
+# Assuming the dataset doesn't have a header row, you need to add column names
+mushroom_data <- read.csv("mushroom.csv", header = FALSE)
+
+# Define the column names as per the dataset's description
+column_names <- c("class", "cap_shape", "cap_surface", "cap_color", "bruises", "odor",
+                  "gill_attachment", "gill_spacing", "gill_size", "gill_color",
+                  "stalk_shape", "stalk_root", "stalk_surface_above_ring", 
+                  "stalk_surface_below_ring", "stalk_color_above_ring", 
+                  "stalk_color_below_ring", "veil_type", "veil_color", "ring_number", 
+                  "ring_type", "spore_print_color", "population", "habitat")
+
+# Assign the column names to the dataset
+colnames(mushroom_data) <- column_names
+
+```
+
+```{r}
+# Read the dataset into R
+mushroom_data <- read.csv("mushroom.csv", header = FALSE)
+
+# Define the column names as per the dataset's documentation
+column_names <- c("class", "cap_shape", "cap_surface", "cap_color", "bruises", "odor",
+                  "gill_attachment", "gill_spacing", "gill_size", "gill_color",
+                  "stalk_shape", "stalk_root", "stalk_surface_above_ring", 
+                  "stalk_surface_below_ring", "stalk_color_above_ring", 
+                  "stalk_color_below_ring", "veil_type", "veil_color", "ring_number", 
+                  "ring_type", "spore_print_color", "population", "habitat")
+
+# Assign the column names to the dataset
+colnames(mushroom_data) <- column_names
+
+```
+
+```{r}
+table(mushrooms$cap_shape, mushrooms$type)
+```
+
+```{r}
+table(mushroom_data$cap_shape, mushroom_data$class)
+
+```
+
+```{r}
+library(OneR)  # Ensure the OneR package is loaded
+
+mush_1R <- OneR(class ~ ., data = mushroom_data, verbose = TRUE)
+
+```
+
+```{r}
+head(iris)
+```
+
+```{r}
+data <- optbin(iris)
+head(data)
+```
+
+```{r}
+model <- OneR(data, verbose = TRUE)
+```
+
+```{r}
+summary(model)
+```
+
+```{r}
+plot(model)
+```
+
+```{r}
+prediction <- predict(model, data)
+
+eval_model(prediction, data)
+```
+
+```{r}
+data(breastcancer)
+data <- breastcancer
+```
+
+```{r}
+set.seed(12) # for reproducibility
+random <- sample(1:nrow(data), 0.8 * nrow(data))
+data_train <- optbin(data[random, ], method = "infogain")
+```
+
+```{r}
+data_test <- data[-random, ]
+
+```
+
+```{r}
+model_train <- OneR(data_train, verbose = TRUE)
+
+```
+
+```{r}
+summary(model_train)
+
+```
+
+```{r}
+plot(model_train)
+
+```
+
+```{r}
+prediction <- predict(model_train, data_test)
+
+```
+
+```{r}
+eval_model(prediction, data_test)
+
+```
+
+```{r}
+data <- iris
+str(data)
+```
+
+```{r}
+str(bin(data))
+
+```
+
+```{r}
+str(bin(data, nbins = 3, labels = c("small", "medium", "large")))
+
+```
+
+```{r}
+set.seed(1); table(bin(rnorm(900), nbins = 3))
+
+```
+
+```{r}
+set.seed(1); table(bin(rnorm(900), nbins = 3, method = "content"))
+
+```
+
+```{r}
+intervals <- paste(levels(bin(faithful$waiting, nbins = 2, method = "cluster")), collapse = " ")
+hist(faithful$waiting, main = paste("Intervals:", intervals))
+abline(v = c(42.9, 67.5, 96.1), col = "blue")
+```
+
+```{r}
+bin(c(1:10, NA), nbins = 2, na.omit = FALSE) # adds new level "NA"
+
+```
+
+```{r}
+bin(c(1:10, NA), nbins = 2)
+
+```
+
+```{r}
+df <- data.frame(numeric = c(1:26), alphabet = letters)
+str(df)
+```
+
+```{r}
+str(maxlevels(df))
+
+```
+
+```{r}
+model <- OneR(iris)
+predict(model, data.frame(Petal.Width = seq(0, 3, 0.5)))
+```
+
+```{r}
+predict(model, data.frame(Petal.Width = seq(0, 3, 0.5)), type = "prob")
+
+```
+
+```{r}
+help(package = OneR)
+
+```

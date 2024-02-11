@@ -1,0 +1,446 @@
+---
+title: "7CS039StatisticsMelanoma"
+author: "Mazafer Ul-Raqib"
+format: docx
+editor: visual
+---
+
+## 7CS039 Statistics Melanoma
+
+```{r setup}
+#| include: false
+options(warn = -1)
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```
+
+```{r}
+options(repos = c(CRAN = "https://cran.rstudio.com/"))
+```
+
+```{r}
+install.packages("ggplot2")
+install.packages("plotly")
+install.packages("dplyr")
+install.packages("OneR")
+install.packages("ggpubr")
+library(ggpubr)
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(OneR)
+```
+
+```{r}
+install.packages("webshot")
+webshot::install_phantomjs() 
+```
+
+```{r}
+install.packages("webshot2")
+```
+
+```{r}
+melanoma_data <- read.csv("https://raw.githubusercontent.com/maz786/WlvMScAI/main/7CS039Statistics/Assessment/melanoma.csv")
+options(scipen=999)
+
+head(melanoma_data)
+```
+
+```{r}
+data <- read.csv("https://raw.githubusercontent.com/maz786/WlvMScAI/main/7CS039Statistics/Assessment/melanoma.csv")
+
+str(data)
+```
+
+```{r}
+data_cleaned <- data[ , -1]  
+```
+
+```{r}
+str(data_cleaned)
+
+head(data_cleaned)
+```
+
+```{r}
+data_cleaned <- data[, -1] r
+```
+
+```{r}
+head(data_cleaned)
+```
+
+## Part (i) Summary statistics of the dataset
+
+```{r}
+head(data)
+```
+
+```{r}
+summary_statistics <- summary(data)
+print(summary_statistics)
+```
+
+```{r}
+library(dplyr)
+data %>% summarise_all(funs(min, max, mean, sd, quantile(., 0.25), quantile(., 0.5), quantile(., 0.75)))
+```
+
+### **Elaboration on Summary Statistics in Paragraph Format**
+
+1.  **Unnamed: 0 (Identifier)**
+
+    -   The 'Unnamed: 0' column, ranging uniformly from 1 to 205 with an average value of 103, is indicative of a simple sequential identifier for each patient in the dataset. This uniform distribution and mean exactly at the midpoint suggest that it serves as an index and does not hold intrinsic analytical value. Its presence is typical in datasets for organizational purposes but does not contribute to the understanding of melanoma characteristics or patient outcomes.
+
+2.  **Time (Duration to Event or Censoring)**
+
+    -   The 'time' variable, showing a broad range from 10 to 5565 days, with a mean of 2152.8 days and a standard deviation of 1122.06, reflects considerable variability in the duration until an event or censoring among patients. This extensive range implies diverse patient experiences, possibly capturing both early-stage detections and more advanced melanoma cases. The variability, denoted by the high standard deviation, suggests heterogeneity in disease progression, response to treatments, or differences in follow-up periods among the patients.
+
+3.  **Status (Event Type)**
+
+    -   The 'status' variable, with values from 1 to 3 and a mean close to 2, likely categorizes the types of events or censoring in melanoma progression. Most patients fall into the first two categories, indicating specific stages or outcomes, which could range from remission to disease progression or recurrence. Understanding the exact nature of these categories would require further contextual information, but they undoubtedly play a crucial role in analyzing patient outcomes.
+
+4.  **Sex (Gender)**
+
+    -   The 'sex' variable, represented as 0 and 1 and having a mean of 0.385, suggests a higher proportion of females in the study population. This gender distribution is critical for understanding the dataset's demographic representation and could reflect epidemiological trends in melanoma incidence or biases in the sampled population.
+
+5.  **Age (Patient Age)**
+
+    -   The age distribution, spanning from 4 to 95 years with an average of 52.46 years, encompasses a wide spectrum of patient ages. This range indicates that the dataset includes both pediatric and elderly patients, offering a comprehensive view of melanoma across different age groups. The mean age in the early fifties might suggest a higher prevalence of melanoma diagnosis during these years, or it could simply mirror the age structure of the sampled population.
+
+6.  **Year (Year of Data Collection)**
+
+    -   Spanning from 1962 to 1977, the 'year' variable provides a historical perspective over a 15-year period. This time frame allows for the analysis of trends and changes in melanoma diagnosis, treatment, and outcomes over time, offering insights into the evolution of medical practices and patient management strategies.
+
+7.  **Thickness (Melanoma Thickness)**
+
+    -   The 'thickness' of melanoma, ranging from 0.1 mm to 17.42 mm with an average of 2.92 mm, indicates a wide variability in melanoma severity at diagnosis. The broad range encompasses very early-stage to advanced melanomas, highlighting the diverse nature of cases in the dataset. This variability is critical for understanding the disease's progression and the effectiveness of early detection strategies.
+
+8.  **Ulcer (Presence of Ulceration)**
+
+    -   The 'ulcer' variable, being binary with about 44% of cases showing ulceration, indicates the significant presence of this clinical feature among patients. The presence or absence of ulceration is an important factor in melanoma prognosis, and its nearly balanced distribution in this dataset underscores its relevance in patient outcomes and treatment planning.
+
+Each variable in the melanoma dataset provides unique and crucial insights into the disease's characteristics and patient demographics. The wide range of values and distributions observed in these variables reflects the heterogeneity of melanoma and underscores the complexity of its study. These insights form the foundation for more in-depth analyses and are instrumental in guiding research and clinical approaches in melanoma care.
+
+## **(ii) Graphical Summaries and Commentry**
+
+```{r}
+gg_time <- ggplot(data_cleaned, aes(x=time)) +
+           geom_density(fill="steelblue", alpha=0.7) +
+           labs(title="Time Density Plot", x="Time", y="Density")
+ggplotly(gg_time)
+```
+
+**Summary Statistics and Graphical Insights**: The 'time' variable, which represents the duration until an event or censoring, has a mean of 2152.8 days and a standard deviation of 1122.06 days, with values ranging from 10 to 5565 days. This wide range indicates significant variation in survival or follow-up times among patients. The density plot of time shows a right-skewed distribution, suggesting that a larger number of patients have shorter follow-up or survival times, with fewer patients experiencing longer durations. There are several peaks, suggesting possible subgroups within the data.This skewness could be indicative of differing progression rates or treatment efficacies within the patient population.
+
+### **Age**
+
+```{r}
+gg_age <- ggplot(data_cleaned, aes(x=factor(1), y=age)) +
+          geom_violin(fill="green") +
+          labs(title="Age Violin Plot", x="", y="Age")
+ggplotly(gg_age)
+```
+
+**Summary Statistics and Graphical Insights**: The age of patients ranges broadly from 4 to 95 years, with a mean age of 52.46 years and a standard deviation of 16.67 years. Most patients are in their 50s and 60s. The violin plot for age reveals a distribution that is roughly symmetric around the median, suggesting a balanced representation of different age groups. The widest part of the plot, indicating the highest density, occurs in the middle-age range, showing a concentration of patients in this age bracket. This distribution might reflect the age-related risks associated with melanoma or the age demographics of the population being studied.
+
+### **Year of Operation**
+
+```{r}
+gg_year <- ggplot(data_cleaned, aes(x=factor(year))) +
+           geom_line(stat="count", aes(group=1), color="orange") +
+           labs(title="Year of Operation Line Plot", x="Year", y="Count")
+ggplotly(gg_year)
+```
+
+**Summary Statistics and Graphical Insights**: The dataset covers operations from 1962 to 1977. The line plot for the year of operation displays a relatively uniform distribution of operations across the years, with minor fluctuations. This uniformity suggests a consistent number of operations per year, indicating steady case detection or referral rates over the 15-year period. The absence of significant peaks or troughs in the line plot might also suggest stable medical practices or recording methods during these years.
+
+### **Thickness**
+
+```{r}
+gg_thickness <- ggplot(data_cleaned, aes(x="", y=thickness)) +
+                geom_boxplot(fill="purple") +
+                labs(title="Thickness Box Plot", x="", y="Thickness")
+ggplotly(gg_thickness)
+```
+
+**Summary Statistics and Graphical Insights**: The thickness of melanoma in patients shows a mean of 2.92 mm and a standard deviation of 2.96 mm, with values ranging from 0.1 to 17.42 mm. The box plot for thickness reveals a right-skewed distribution, with a number of outliers indicating very thick melanomas. Most melanomas are within a thinner range, but the presence of outliers suggests cases with significantly thicker melanomas, potentially indicating advanced stages or aggressive types of melanoma.
+
+### **Status**
+
+```{r}
+gg_status <- ggplot(data_cleaned, aes(x=factor(status))) +
+             geom_bar(fill="coral", color="black") +
+             labs(title="Status Distribution", x="Status", y="Count")
+
+ggplotly(gg_status)
+```
+
+**Status - Summary Statistics and Graphical Insights**: The 'status' variable in the dataset categorizes patients into three groups, reflecting different melanoma outcomes or stages. The bar chart shows the patient count in each category, revealing the predominant statuses. Taller bars for certain statuses indicate more patients in those categories, essential for understanding prevalent outcomes in the cohort. The distribution among the different statuses is uneven, with some categories more prevalent than others. The interactive chart allows users to hover for exact counts, enhancing data accessibility and supporting further melanoma research or analysis.
+
+### **Sex**
+
+```{r}
+ggplot(data, aes(x = factor(sex))) + 
+  geom_bar(fill = "purple") +
+  labs(title = "Bar Plot of Sex", x = "Sex", y = "Count")
+```
+
+The plot shows a higher count of one gender over the other.
+
+```{r}
+gg_sex_time <- ggplot(data_cleaned, aes(x=factor(sex), y=time, fill=factor(sex))) +
+               geom_boxplot() +
+               labs(title="Time Distribution by Sex", x="Sex", y="Time") +
+               scale_fill_manual(values=c("blue", "pink"), name="Sex")
+
+ggplotly(gg_sex_time)
+```
+
+**Summary Statistics and Graphical Insights for Sex Distribution**: The dataset reveals a higher proportion of females, as shown by a box plot comparing the time distribution between sexes. This plot displays the interquartile ranges, medians, and outliers for each sex, enabling a comparison of time-related outcomes. These differences might reflect variations in melanoma progression, detection between sexes, or demographic trends. This box plot is key for understanding how clinical variables vary with gender, highlighting potential sex-specific patterns in melanoma.
+
+### **Ulcer**
+
+```{r}
+ggplot(data, aes(x = factor(ulcer))) + 
+  geom_bar(fill = "cyan") +
+  labs(title = "Bar Plot of Ulcer", x = "Ulcer", y = "Count")
+```
+
+**Summary Statistics and Graphical Insights (Concise Version)**: The distribution is almost even between the two categories, with a slight prevalence of one category. The **`ulcer`** variable is a binary indicator (0 or 1), with about 44% (mean: 0.439) of the 205 cases showing ulceration presence. This near-even distribution between the two categories suggests a significant number of patients with and without ulceration. The analysis of this variable is crucial for understanding its role in the context of melanoma, as ulceration presence can be an important clinical factor. Graphically, a bar chart or pie chart would effectively illustrate this binary distribution, highlighting the proportion of patients with ulcer presence versus absence, which can be critical in medical research and treatment planning.
+
+### **Unnamed: 0**
+
+**Summary Statistics and Graphical Insights (Concise Version)**: The **`Unnamed: 0`** column, with a count of 205 and values ranging from 1 to 205, seems to be a simple identifier or index for each record. Its mean of 103 and quartiles (25% - 52, 50% - 103, 75% - 154) align perfectly with what's expected from a sequential numbering system. As such, this variable likely doesn't hold analytical value and is typically not used for further analysis. A visual representation of this variable would only show a linear increase from 1 to 205, reaffirming its role as an index.
+
+These visualizations provide a more nuanced understanding of the data's characteristics.
+
+## **Part (iii) - Regression Analysis and Correlation**
+
+## a) Time ∼ Thickness
+
+### **Perform Regression Analysis**
+
+```{r}
+lm_time_thickness <- lm(time ~ thickness, data=melanoma_data)
+summary(lm_time_thickness)
+```
+
+### **Compute Correlation Coefficients**
+
+```{r}
+cor(melanoma_data$time, melanoma_data$thickness)
+```
+
+### Interactive Visualization for Time ∼ Thickness
+
+```{r}
+gg_time_thickness <- ggplot(melanoma_data, aes(x=thickness, y=time)) +
+                     geom_point() +
+                     geom_smooth(method="lm", col="blue") +
+                     labs(title="Time vs Thickness", x="Thickness", y="Time")
+
+ggplotly(gg_time_thickness)
+```
+
+**Time ∼ Thickness Relationship**
+
+-   **Regression Analysis**: The linear regression model reveals a significant inverse relationship between the time until an event or censoring and the thickness of melanoma. Specifically, the model's coefficient for thickness is -89.2545, which is statistically significant. This means for each unit increase in melanoma thickness (measured in millimeters), the time until an event or censoring decreases by about 89 days, on average. This finding could suggest that patients with thicker melanomas may experience quicker disease progression or earlier adverse events.
+
+-   **Correlation Coefficient**: The correlation coefficient of -0.2354 indicates a modest but negative linear relationship. This reinforces the idea that thickness and time are inversely related, though other factors might also influence the time until an event or censoring.
+
+## b) Time ∼ Age
+
+### **Perform Regression Analysis**
+
+```{r}
+lm_time_age <- lm(time ~ age, data=melanoma_data)
+summary(lm_time_age)
+```
+
+### **Compute Correlation Coefficients**
+
+```{r}
+cor(melanoma_data$time, melanoma_data$age)
+```
+
+### Interactive Visualization for Time ∼ Age
+
+```{r}
+gg_time_age <- ggplot(melanoma_data, aes(x=age, y=time)) +
+               geom_point() +
+               geom_smooth(method="lm", col="red") +
+               labs(title="Time vs Age", x="Age", y="Time")
+
+ggplotly(gg_time_age)
+```
+
+**Time ∼ Age Relationship**
+
+-   **Regression Analysis**: The analysis shows a significant negative correlation between patient age and time until an event or censoring. The age coefficient is -20.2931, meaning that for each additional year in age, the time until an event or censoring decreases by about 20 days. This could imply that older patients tend to have more aggressive disease progression or earlier clinical endpoints, possibly due to age-related factors or comorbidities that might affect the course of melanoma.
+
+-   **Correlation Coefficient**: With a correlation coefficient of -0.3015, there is a moderate negative linear relationship. This level of correlation suggests a noticeable but not overly strong association, implying that age is an important but not exclusive factor in determining the time until an event or censoring.
+
+## c) Thickness ∼ Age
+
+### **Perform Regression Analysis**
+
+```{r}
+lm_thickness_age <- lm(thickness ~ age, data=melanoma_data)
+summary(lm_thickness_age)
+```
+
+### **Compute Correlation Coefficients**
+
+```{r}
+cor(melanoma_data$thickness, melanoma_data$age)
+```
+
+### Interactive Visualization for Thickness ∼ Age
+
+```{r}
+gg_thickness_age <- ggplot(melanoma_data, aes(x=age, y=thickness)) +
+                    geom_point() +
+                    geom_smooth(method="lm", col="green") +
+                    labs(title="Thickness vs Age", x="Age", y="Thickness")
+
+ggplotly(gg_thickness_age)
+```
+
+**Thickness ∼ Age Relationship**
+
+-   **Regression Analysis**: The model shows a positive association between melanoma thickness and patient age, with a coefficient of 0.0377. This suggests that, on average, the thickness of melanoma increases slightly with each additional year of age. This trend might be indicative of changes in the biology of melanoma or detection patterns as people age, such as delayed diagnosis leading to thicker melanomas in older individuals.
+
+-   **Correlation Coefficient**: The correlation of 0.2125, although positive, is relatively weak. This indicates that while there is some degree of association between age and thickness, the relationship is not particularly strong, suggesting that other factors besides age may play a more significant role in determining melanoma thickness.
+
+In summary, these results provide a detailed view of how key variables interrelate in the context of melanoma. The significant relationships revealed by the regression models, complemented by the correlation coefficients, underscore the complex interplay between patient age, melanoma thickness, and the time until an event or censoring. These insights could be crucial for understanding disease progression, guiding patient management, and informing clinical and research strategies in melanoma care.
+
+## **Part (iv) -** Commentary on any observed relationships between the variables in part (iii)
+
+Observed relationships for each of the variable pairs from the melanoma dataset analysis:
+
+### **1. Time ∼ Thickness Relationship**
+
+The relationship between time and melanoma thickness reveals a significant inverse association, indicating that patients with thicker melanomas tend to experience events or reach censoring points sooner than those with thinner melanomas. This finding is critical in understanding the aggressiveness of melanoma. The negative regression coefficient (-89.2545) suggests a substantial decrease in time until an event or censoring with each millimeter increase in thickness, implying that thickness could be an important prognostic factor. The modest negative correlation (-0.2354) supports this relationship but also indicates that while thickness is a significant factor, it is not the sole determinant of patient outcomes. This relationship highlights the potential urgency and seriousness of thicker melanomas, underscoring the importance of early detection and intervention.
+
+### **2. Time ∼ Age Relationship**
+
+The analysis between time and age demonstrates a moderately negative correlation, suggesting that older patients generally have shorter times until an event or censoring. This could imply that melanoma may be more aggressive or progress more quickly in older individuals. The regression coefficient of -20.2931 indicates that each additional year in age is associated with a decrease in time until an event, pointing towards age as a relevant factor in the progression of melanoma. This observation may reflect biological changes with aging that affect melanoma behavior or could be related to later stages of diagnosis in older populations. Understanding this relationship is crucial for patient management, particularly in tailoring surveillance and treatment strategies for older melanoma patients.
+
+### **3. Thickness ∼ Age Relationship**
+
+The relationship between thickness and age shows a positive but weak correlation, indicating that melanoma thickness tends to increase slightly with patient age. The positive regression coefficient (0.0377) suggests a gradual increase in melanoma thickness for each additional year of age. This trend could be indicative of cumulative sun exposure over time leading to more severe melanoma cases or a delay in detection and diagnosis in older individuals. The weak correlation coefficient (0.2125) implies that while there is a relationship, it is not highly pronounced, and other factors beyond age likely play a significant role in determining melanoma thickness. This insight can help in understanding the risk factors associated with melanoma severity and guide efforts in early detection, especially in older populations.
+
+Each of these relationships provides valuable insights into the dynamics of melanoma progression and patient outcomes, offering potential avenues for targeted research, prevention, and treatment strategies.
+
+## **Part (v) - R Code for Two-Sample Significance Tests**
+
+**Time ∼ Thickness by Gender**
+
+```{r}
+t.test(time ~ sex, data = data_cleaned[data_cleaned$thickness != is.na(data_cleaned$thickness),])
+```
+
+The t-test comparing time in relation to melanoma thickness between genders shows a statistically significant difference (t-statistic = -2.08, p-value = 0.0387). This implies that the average time until an event or censoring, considering melanoma thickness, significantly differs between male and female patients. The negative t-statistic suggests that males may experience events or reach censoring points sooner compared to females when considering melanoma thickness. This finding is crucial as it indicates a gender-specific variation in disease progression or response to treatment, which could be vital for personalized patient management and therapy strategies in melanoma cases.
+
+**Time ∼ Age by Gender**
+
+```{r}
+t.test(time ~ sex, data = data_cleaned[data_cleaned$age != is.na(data_cleaned$age),])
+```
+
+Interestingly, the analysis for the time and age relationship, categorized by gender, yields the same statistical values as the time and thickness relationship (t-statistic = -2.08, p-value = 0.0387). This suggests a significant difference in how age affects the time until an event or censoring between male and female patients. Given the negative t-statistic, it appears that age influences the disease timeline more in males than in females. This outcome highlights the importance of considering gender in understanding the impact of age on melanoma prognosis and could guide more nuanced approaches in patient care.
+
+**Thickness ∼ Age by Gender**
+
+```{r}
+t.test(thickness ~ sex, data = data_cleaned[data_cleaned$age != is.na(data_cleaned$age),])
+```
+
+The t-test for melanoma thickness in relation to age, grouped by gender, shows a statistically significant difference (t-statistic = 2.61, p-value = 0.0101). This result indicates that melanoma thickness, as it relates to age, varies significantly between males and females. The positive t-statistic suggests that, on average, males might have thicker melanomas compared to females as they age. This insight is particularly valuable for identifying gender-based differences in melanoma development, potentially influencing early detection strategies and tailored interventions based on patient gender.
+
+These results underscore the importance of considering gender in the analysis of melanoma characteristics and progression, revealing significant differences in how time, age, and thickness interrelate between male and female patients. Such findings are essential for developing gender-specific strategies in melanoma research, prevention, and treatment.
+
+## **Part (vi) R Code for QQ-Plots**
+
+```{r}
+library(ggplot2)
+library(ggpubr)
+
+create_qq_plot <- function(data, variable, gender) {
+  ggqqplot(data[data$sex == gender, variable], 
+           title = paste("QQ-Plot of", variable, "for", ifelse(gender == 1, "Males", "Females")),
+           ggtheme = theme_minimal())
+}
+
+plot1 <- create_qq_plot(melanoma_data, "time", 1)     # Time for Males
+plot2 <- create_qq_plot(melanoma_data, "time", 0)     # Time for Females
+plot3 <- create_qq_plot(melanoma_data, "thickness", 1) # Thickness for Males
+plot4 <- create_qq_plot(melanoma_data, "thickness", 0) # Thickness for Females
+plot5 <- create_qq_plot(melanoma_data, "age", 1)       # Age for Males
+plot6 <- create_qq_plot(melanoma_data, "age", 0)       # Age for Females
+
+ggarrange(plot1, plot2, plot3, plot4, plot5, plot6, ncol = 2, nrow = 3)
+```
+
+### **1. Time Variable by Gender**
+
+In the melanoma dataset, males show a mean time of approximately 1945.7 days with a standard deviation of 1148.4, while females have a mean of around 2282.6 days and a standard deviation of 1089.8. These statistics suggest that, on average, females experience a longer duration until an event or censoring compared to males. The QQ-plots for the time variable in both genders are likely to reveal deviations from the normal distribution line, reflecting the right-skewed nature typical in survival time data. In males, the lower mean time could result in a steeper deviation on the higher end of the plot, indicating that fewer males reach the longest survival times. For females, the QQ-plot may show a slightly more balanced distribution but still with notable deviations, especially in the tails, reflecting variability in survival times and the presence of outliers.
+
+### **2. Thickness Variable by Gender**
+
+The dataset indicates a significant difference in melanoma thickness between genders, with males having an average thickness of 3.61 mm (standard deviation: 3.16 mm) compared to 2.49 mm (standard deviation: 2.75 mm) in females. This discrepancy suggests that melanomas in males tend to be diagnosed at a thicker stage than in females. The QQ-plots for thickness are expected to show a right-skewed distribution for both genders, more pronounced in males. This skewness may be indicative of a subset of patients (particularly males) with exceptionally thick melanomas. The plots could exhibit a curve bending upwards at the higher end, reflecting these thicker cases. The deviation from normality in these plots underscores the varied nature of melanoma thickness at diagnosis and highlights the importance of considering gender differences in clinical assessments and treatment planning.
+
+### **3. Age Variable by Gender**
+
+Regarding the age distribution, males in the dataset have an average age of 53.9 years with a standard deviation of 17.61 years, while females have an average of 51.56 years with a standard deviation of 16.06 years. These similar distributions suggest that the age at which melanoma is diagnosed does not differ substantially between genders. The QQ-plots for age are expected to be relatively closer to the normal distribution compared to time and thickness, yet with slight deviations. These deviations might be due to the presence of younger or older patients in the dataset, causing the tails of the plots to diverge from the expected line. Despite these minor deviations, the age variable's distribution among both males and females suggests a relatively normal spread, indicating no significant age-related anomalies in the diagnosis of melanoma across genders.
+
+These detailed insights into the distributions of time, thickness, and age, stratified by gender, highlight the nuanced differences and characteristics within the melanoma dataset. Such analysis is pivotal for understanding the underlying patterns and trends in melanoma progression and patient demographics.
+
+### 
+
+## **Part (vii) -** Insights generated from the data analysis and provide recommendations on aspects that should be investigated in more detail
+
+### **Discussion of Insights from the Data**
+
+1.  **Relationships Among Variables**:
+
+    -   The analysis revealed weak negative correlations between time and both thickness and age, suggesting a slight decrease in the time to event or censoring as thickness or age increases. However, these relationships are not dominant, implying that other factors might play a more significant role in determining the time to events in melanoma cases.
+
+    -   The weak positive correlation between thickness and age indicates that older patients are slightly more likely to have thicker melanomas. This finding could be related to cumulative sun exposure over time or delayed detection in older individuals.
+
+2.  **Gender Differences**:
+
+    -   The significant differences in time and thickness between genders are particularly noteworthy. Males tend to have thicker melanomas and shorter times to events or censoring compared to females. This highlights the importance of considering gender in melanoma studies, as it appears to be a significant factor influencing disease characteristics.
+
+3.  **Distribution Characteristics**:
+
+    -   QQ-plots indicated that time and thickness do not follow a normal distribution perfectly, especially in their higher values. This deviation from normality could impact certain types of statistical analyses and interpretations, suggesting the need for more robust or non-parametric methods.
+
+### **Recommendations for Further Investigation**
+
+1.  **Explore Additional Variables and Factors**:
+
+    -   Investigate other variables and factors that might influence time, thickness, or age, such as lifestyle factors, genetic predispositions, or specific treatment types. Understanding these additional variables could provide a more comprehensive view of the factors influencing melanoma progression.
+
+2.  **Detailed Analysis Focusing on Gender Differences**:
+
+    -   Given the significant findings in time and thickness between genders, a more in-depth analysis focusing on these differences is recommended. Understanding the underlying reasons for these gender disparities could lead to more personalized treatment approaches and targeted prevention strategies.
+
+3.  **Longitudinal Analysis and Data Over Time**:
+
+    -   If longitudinal data is available, conducting an analysis over time could offer valuable insights into the progression of melanoma and its predictors. This would help in understanding how the disease evolves and responds to various treatments.
+
+4.  **Non-Parametric Methods for Non-Normal Distributions**:
+
+    -   For variables that do not follow normal distributions, consider employing non-parametric statistical methods in future analyses. This approach might be more suitable for analyzing skewed data and could provide more accurate insights.
+
+5.  **Clinical Collaboration and Relevance**:
+
+    -   Collaborate with clinical experts to interpret the findings within a medical context. Particularly, the implications of melanoma thickness and patient age should be considered in clinical decision-making processes.
+
+6.  **Further Research on Subgroups and Specific Patterns**:
+
+    -   The dataset suggests the presence of subgroups within the patient population. Investigating these subgroups might reveal more specific patterns, risk factors, or unique characteristics of melanoma progression.
+
+This detailed analysis and the accompanying recommendations aim to enhance the understanding of melanoma characteristics and progression, providing a foundation for future research and clinical applications. By focusing on these key areas, future studies can potentially uncover critical insights that lead to improved patient outcomes and more effective melanoma treatments.
